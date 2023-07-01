@@ -1,13 +1,14 @@
-from jose import jwt, JWTError, ExpiredSignatureError
 from datetime import datetime, timedelta
-from fastapi import HTTPException, status, Depends, Header
+
+from fastapi import HTTPException, status, Depends
 from fastapi.security.oauth2 import OAuth2PasswordBearer
+from jose import jwt, JWTError, ExpiredSignatureError
 from sqlalchemy.orm import Session
 
-from . schemas import TokenData
+from .config import settings
 from .database import get_db
-from . models import User as UserModel
-import time
+from .models import User as UserModel
+from .schemas import TokenData
 
 ALGORITHM = "HS256"
 SECRET = "Super Secret key"
@@ -16,15 +17,15 @@ EXPIRATION_TIME = 30
 
 def create_access_token(data: dict):
     token_data = data.copy()
-    expiration_time = datetime.utcnow() + timedelta(minutes=EXPIRATION_TIME)
+    expiration_time = datetime.utcnow() + timedelta(minutes=settings.EXPIRATION_TIME)
     token_data.update({"exp": expiration_time})
-    encoded_jwt = jwt.encode(token_data, SECRET, ALGORITHM)
+    encoded_jwt = jwt.encode(token_data, settings.SECRET, ALGORITHM)
     return encoded_jwt
 
 
 def validate_access_token(token):
     try:
-        payload = jwt.decode(token, SECRET, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET, algorithms=[settings.ALGORITHM])
         user_id: int = payload.get("user_id")
         exp_time = payload.get('exp')
         if not user_id or not exp_time:

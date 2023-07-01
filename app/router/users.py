@@ -30,7 +30,7 @@ def get_user(id: int, db: Session = Depends(get_db), user_id: str = Depends(get_
 
 
 @router.post("/", response_model=User, status_code=status.HTTP_201_CREATED)
-def create_user(user: CreateUser, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+def create_user(user: CreateUser, db: Session = Depends(get_db)):
     hashed_password = hash_password(user.password)
     user.password = hashed_password
     new_user = UserModel(**user.dict())
