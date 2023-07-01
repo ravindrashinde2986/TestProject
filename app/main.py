@@ -9,6 +9,7 @@ from .database import engine
 from .models import Base
 from .router import users, posts, auth, vote
 from .utils import build_file_path
+from os import path
 # models.Base.metadata.create_all(bind=engine)
 
 logger = logging.getLogger("uvicorn.error")
@@ -37,7 +38,8 @@ async def startup() -> None:
 
 async def run_migrations():
     logger.info("Start migration")
-    alembic_file_path = build_file_path("../migrations/alembic.ini")
+    alembic_file_path = build_file_path("../alembic.ini")
+    print(path.exists(alembic_file_path), alembic_file_path)
     logger.info("Starting model upgrade")
     upgrade(Config(alembic_file_path), "head")
     logger.info("Completed migration")

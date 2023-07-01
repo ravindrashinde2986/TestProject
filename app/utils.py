@@ -1,8 +1,7 @@
-from os import path
-
 from passlib.context import CryptContext
-
 password_context = CryptContext(schemes=['bcrypt'], deprecated="auto")
+
+from os import path
 
 
 def hash_password(password):
